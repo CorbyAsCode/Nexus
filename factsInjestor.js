@@ -26,7 +26,7 @@ function stringToObj(string) {
 }
 
 var MongoClient = mongodb.MongoClient;
-var url = 'mongodb://mongo:27017/facts';
+var url = 'mongodb://localhost:27017/facts';
 MongoClient.connect(url, function (err, db) {
   if (err) {
     console.log('Unable to connect to the mongoDB server. Error:', err);
