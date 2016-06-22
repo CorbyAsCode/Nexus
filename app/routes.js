@@ -71,7 +71,8 @@ router.get('/api1/count', function(req, res) {
   var validQuery = utils.validateQuery(queryObject);
 
   mongoCount(mongoConnector, 'allFacts', validQuery, function(count, db) {
-    res.send('Result = ' + count + '\n');
+    //res.send('Result = ' + count + '\n');
+    res.json(count);
     db.close;
   });
 });
@@ -90,6 +91,7 @@ router.get('/api1/find', function(req, res) {
   //console.log('find.proj.typeof = ', typeof proj);
   
   mongoFind(mongoConnector, 'allFacts', query, proj, sort, function(found, db) {
+    /*
     // Construct a rudimentary HTTP response
     var foundLen = found.length;
     var send = '';
@@ -103,6 +105,8 @@ router.get('/api1/find', function(req, res) {
       send += docOut + '<br>';
     }
     res.send(send);
+    */
+    res.json(found);
     db.close();
   });
 }); 
