@@ -2,7 +2,7 @@ var fs = require('fs');
 var mongodb = require('mongodb');
 
 //var inData = 'factsDump.json';
-var inData = 'facts_dump.json.orig';
+var inData = 'facts_dump.json';
 //var inData = 'factsDumpShort.json';
 //var outData = {};
 
