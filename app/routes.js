@@ -43,7 +43,7 @@ function mongoCount(conn, coll, query, callback) {
   });
 };
 
-function mongoFind(conn, coll, query, proj, callback) {
+function mongoFind(conn, coll, query, proj, sort, callback) {
   MongoClient.connect(conn, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -51,7 +51,7 @@ function mongoFind(conn, coll, query, proj, callback) {
       //We are connected. :)
       console.log('Connection established to', conn);
       var collection = db.collection(coll);
-      var cursor = collection.find(query, proj);
+      var cursor = collection.find(query, proj).sort(sort);
       var results = [];
       cursor.each(function(err, doc) {
         if (err) {
@@ -82,12 +82,14 @@ router.get('/api1/find', function(req, res) {
   var validQuery = utils.validateQuery(queryObject);
   var query = utils.stringToObj(validQuery.query);
   var proj = utils.stringToObj(validQuery.proj);
+  var sort = utils.stringToObj(validQuery.sort);
   console.log('query = ', query);
   console.log('projection = ', proj);
-  console.log('find.query.typeof = ', typeof query);
-  console.log('find.proj.typeof = ', typeof proj);
+  console.log('sort = ', sort);
+  //console.log('find.query.typeof = ', typeof query);
+  //console.log('find.proj.typeof = ', typeof proj);
   
-  mongoFind(mongoConnector, 'allFacts', query, proj, function(found, db) {
+  mongoFind(mongoConnector, 'allFacts', query, proj, sort, function(found, db) {
     // Construct a rudimentary HTTP response
     var foundLen = found.length;
     var send = '';
