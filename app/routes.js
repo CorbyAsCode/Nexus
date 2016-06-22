@@ -3,6 +3,7 @@ var mongodb = require('mongodb');
 var url = require('url');
 //var User = require('./models/user');
 var router = express.Router();
+var utils = require('./routeUtils');
 //var passport = require('passport');
 //var setUpPassport = require('./setuppassport');
 var app = express();
@@ -19,36 +20,6 @@ router.use(function(req, res, next) {
   next();
 });
 */
-
-// Convert a true or false string to a boolean
-var checkForBooleans = function(value) {
-  if (value.match(/^(true|false)$/)) {
-    return ('true' === value);
-  } else {
-    return value;
-  }
-};
-
-// Check if a string is an object
-function stringToObj(string) {
-  var value = null;
-  try {
-    console.log('Trying to convert string to object...');
-    value = JSON.parse(string);
-  } catch (e) {
-    console.log('stringToObj error: ' + e);
-    value = string;
-  }
-  return value;
-}
-
-var validateQuery = function(queryObject) {
-  var newQueryObj = {};
-  for (var attr in queryObject) {
-    newQueryObj[attr] = checkForBooleans(queryObject[attr]);
-  };
-  return newQueryObj;
-};
 
 function mongoCount(conn, coll, query, callback) {
   MongoClient.connect(conn, function (err, db) {
@@ -97,7 +68,7 @@ function mongoFind(conn, coll, query, proj, callback) {
 
 router.get('/api1/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var validQuery = validateQuery(queryObject);
+  var validQuery = utils.validateQuery(queryObject);
 
   mongoCount(mongoConnector, 'allFacts', validQuery, function(count, db) {
     res.send('Result = ' + count + '\n');
@@ -108,9 +79,9 @@ router.get('/api1/count', function(req, res) {
 
 router.get('/api1/find', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var validQuery = validateQuery(queryObject);
-  var query = stringToObj(validQuery.query);
-  var proj = stringToObj(validQuery.proj);
+  var validQuery = utils.validateQuery(queryObject);
+  var query = utils.stringToObj(validQuery.query);
+  var proj = utils.stringToObj(validQuery.proj);
   console.log('query = ', query);
   console.log('projection = ', proj);
   console.log('find.query.typeof = ', typeof query);
