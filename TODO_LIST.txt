@@ -1,6 +1,8 @@
+DONE - Add sort to the find route
+
 Add aggregation query support
 
-Return all results as JSON
+DONE - Return all results as JSON
 
 Use config files for commonly changed variables
 
