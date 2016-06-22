@@ -20,6 +20,7 @@ router.use(function(req, res, next) {
 });
 */
 
+// Convert a true or false string to a boolean
 var checkForBooleans = function(value) {
   if (value.match(/^(true|false)$/)) {
     return ('true' === value);
@@ -28,7 +29,18 @@ var checkForBooleans = function(value) {
   }
 };
 
-/* Add another function to check if a variable is an object */
+// Check if a string is an object
+function stringToObj(string) {
+  var value = null;
+  try {
+    console.log('Trying to convert string to object...');
+    value = JSON.parse(string);
+  } catch (e) {
+    console.log('stringToObj error: ' + e);
+    value = string;
+  }
+  return value;
+}
 
 var validateQuery = function(queryObject) {
   var newQueryObj = {};
@@ -60,7 +72,7 @@ function mongoCount(conn, coll, query, callback) {
   });
 };
 
-function mongoFind(conn, coll, query, callback) {
+function mongoFind(conn, coll, query, proj, callback) {
   MongoClient.connect(conn, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -68,13 +80,19 @@ function mongoFind(conn, coll, query, callback) {
       //We are connected. :)
       console.log('Connection established to', conn);
       var collection = db.collection(coll);
-
-      collection.find(query, function (err, result) {
+      console.log('mongoFind.query.typeof = ', typeof query);
+      console.log('mongoFind.proj.typeof = ', typeof proj);
+      //collection.find(query, proj, function (err, result) {
+      var cursor = collection.find(query, proj);
+      var results = [];
+      cursor.each(function(err, doc) {
         if (err) {
-          console.log('Error in query', err);
+          console.log('mongoFind error: ', err);
+        } else if (doc != null) {
+          console.log('mongoFind.doc = ' + doc + '\n');
+          results.push(doc);
         } else {
-          console.log('mongoFind.result = ' + result + '\n');
-          callback(result, db);
+          callback(results, db);
         }
       });
     }
@@ -97,15 +115,29 @@ router.get('/api1/count', function(req, res) {
 router.get('/api1/find', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = validateQuery(queryObject);
+  var query = stringToObj(validQuery.query);
+  var proj = stringToObj(validQuery.proj);
+  console.log('query = ', query);
+  console.log('projection = ', proj);
+  console.log('find.query.typeof = ', typeof query);
+  console.log('find.proj.typeof = ', typeof proj);
   
-  console.log('query = ', validQuery.query);
-  console.log('projection = ', validQuery.proj);
-
-  /*
-  mongoFind(mongoconnector, 'allFacts', validQuery.query, validQuery.proj, function(found) {
-    console.log('router.get.find = ' + found + '\n');
-    res.send('Found = ' + found + '\n');
-  }); */
+  mongoFind(mongoConnector, 'allFacts', query, proj, function(found, db) {
+    var foundLen = found.length;
+    var send = '';
+    for (var i = 0; foundLen > i; i++) {
+      //console.log('router.get.find = ' + found[i].fqdn + '\n');
+      var docOut = 'Found #' + i + ': ';
+      for (var key in proj) {
+        if (key != '_id') {
+          docOut += found[i][key] + ', ';
+        }
+      }
+      send += docOut + '<br>';
+    }
+    res.send(send);
+    db.close();
+  });
 }); 
 
 app.get('/api1/users', function (res, req) {
