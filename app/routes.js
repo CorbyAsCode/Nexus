@@ -28,6 +28,8 @@ var checkForBooleans = function(value) {
   }
 };
 
+/* Add another function to check if a variable is an object */
+
 var validateQuery = function(queryObject) {
   var newQueryObj = {};
   for (var attr in queryObject) {
@@ -36,30 +38,75 @@ var validateQuery = function(queryObject) {
   return newQueryObj;
 };
 
+function mongoCount(conn, coll, query, callback) {
+  MongoClient.connect(conn, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      //We are connected. :)
+      console.log('Connection established to', conn);
+      var collection = db.collection(coll);
+
+      collection.count(query, function (err, result) {
+        if (err) {
+          console.log('Error in query', err);
+        } else {
+          console.log('mongoCount.result = ' + result + '\n');
+          callback(result, db);
+          
+        }
+      });
+    }
+  });
+};
+
+function mongoFind(conn, coll, query, callback) {
+  MongoClient.connect(conn, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      //We are connected. :)
+      console.log('Connection established to', conn);
+      var collection = db.collection(coll);
+
+      collection.find(query, function (err, result) {
+        if (err) {
+          console.log('Error in query', err);
+        } else {
+          console.log('mongoFind.result = ' + result + '\n');
+          callback(result, db);
+        }
+      });
+    }
+  });
+};
+
 router.get('/api1/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = validateQuery(queryObject);
   console.log('validQuery = ', validQuery);
 
-
-  MongoClient.connect(mongoConnector, function (err, db) {
-    if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-      //We are connected. :)
-      console.log('Connection established to', mongoConnector);
-      var collection = db.collection('allFacts');
-
-      collection.count(validQuery, function (err, result) {
-        if (err) {
-          console.log('Error in query', err);
-        } else {
-          res.send('Result = ' + result + '\n');
-        }
-      });
-    }
-  }); 
+  mongoCount(mongoConnector, 'allFacts', validQuery, function(count, db) {
+    console.log('router.get.count = ' + count + '\n');
+    res.send('Result = ' + count + '\n');
+    db.close;
+  });
 });
+
+
+router.get('/api1/find', function(req, res) {
+  var queryObject = url.parse(req.url, true).query;
+  var validQuery = validateQuery(queryObject);
+  
+  console.log('query = ', validQuery.query);
+  console.log('projection = ', validQuery.proj);
+
+  /*
+  mongoFind(mongoconnector, 'allFacts', validQuery.query, validQuery.proj, function(found) {
+    console.log('router.get.find = ' + found + '\n');
+    res.send('Found = ' + found + '\n');
+  }); */
+}); 
 
 app.get('/api1/users', function (res, req) {
   var user = res.param('user');
