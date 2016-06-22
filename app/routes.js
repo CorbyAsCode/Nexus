@@ -32,7 +32,7 @@ function mongoCount(conn, coll, query, callback) {
 
       collection.count(query, function (err, result) {
         if (err) {
-          console.log('Error in query', err);
+          console.log('mongoCount error: ', err);
         } else {
           console.log('mongoCount.result = ' + result + '\n');
           callback(result, db);
@@ -66,18 +66,37 @@ function mongoFind(conn, coll, query, proj, sort, callback) {
   });
 };
 
+function mongoAgg(conn, coll, agg, callback) {
+  MongoClient.connect(conn, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      //We are connected. :)
+      console.log('Connection established to', conn);
+      var collection = db.collection(coll);
+      collection.aggregate(agg).toArray(function(err, result) {
+        if (err) {
+          console.log('mongoAgg error: ', err);
+        } else {
+          callback(result, db);
+        }
+      });
+    }
+  });
+};
+
+/* Count things */
 router.get('/api1/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = utils.validateQuery(queryObject);
 
   mongoCount(mongoConnector, 'allFacts', validQuery, function(count, db) {
-    //res.send('Result = ' + count + '\n');
     res.json(count);
     db.close;
   });
 });
 
-
+/* Find things */
 router.get('/api1/find', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = utils.validateQuery(queryObject);
@@ -87,29 +106,26 @@ router.get('/api1/find', function(req, res) {
   console.log('query = ', query);
   console.log('projection = ', proj);
   console.log('sort = ', sort);
-  //console.log('find.query.typeof = ', typeof query);
-  //console.log('find.proj.typeof = ', typeof proj);
   
   mongoFind(mongoConnector, 'allFacts', query, proj, sort, function(found, db) {
-    /*
-    // Construct a rudimentary HTTP response
-    var foundLen = found.length;
-    var send = '';
-    for (var i = 0; foundLen > i; i++) {
-      var docOut = 'Found #' + i + ': ';
-      for (var key in proj) {
-        if (key != '_id') {
-          docOut += found[i][key] + ', ';
-        }
-      }
-      send += docOut + '<br>';
-    }
-    res.send(send);
-    */
     res.json(found);
     db.close();
   });
 }); 
+
+/* Aggregate things */
+router.get('/api1/agg', function(req, res) {
+  var queryObject = url.parse(req.url, true).query;
+  var validQuery = utils.validateQuery(queryObject);
+  var match = utils.stringToObj(validQuery.match);
+  console.log('aggregation type = ', typeof aggregation);
+  console.log('aggregation = ', aggregation);
+
+  mongoAgg(mongoConnector, 'allFacts', aggregation, function(found, db) {
+    //res.json(found);
+    db.close();
+  });
+});
 
 app.get('/api1/users', function (res, req) {
   var user = res.param('user');
