@@ -80,16 +80,12 @@ function mongoFind(conn, coll, query, proj, callback) {
       //We are connected. :)
       console.log('Connection established to', conn);
       var collection = db.collection(coll);
-      console.log('mongoFind.query.typeof = ', typeof query);
-      console.log('mongoFind.proj.typeof = ', typeof proj);
-      //collection.find(query, proj, function (err, result) {
       var cursor = collection.find(query, proj);
       var results = [];
       cursor.each(function(err, doc) {
         if (err) {
           console.log('mongoFind error: ', err);
         } else if (doc != null) {
-          console.log('mongoFind.doc = ' + doc + '\n');
           results.push(doc);
         } else {
           callback(results, db);
@@ -102,10 +98,8 @@ function mongoFind(conn, coll, query, proj, callback) {
 router.get('/api1/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = validateQuery(queryObject);
-  console.log('validQuery = ', validQuery);
 
   mongoCount(mongoConnector, 'allFacts', validQuery, function(count, db) {
-    console.log('router.get.count = ' + count + '\n');
     res.send('Result = ' + count + '\n');
     db.close;
   });
@@ -123,10 +117,10 @@ router.get('/api1/find', function(req, res) {
   console.log('find.proj.typeof = ', typeof proj);
   
   mongoFind(mongoConnector, 'allFacts', query, proj, function(found, db) {
+    // Construct a rudimentary HTTP response
     var foundLen = found.length;
     var send = '';
     for (var i = 0; foundLen > i; i++) {
-      //console.log('router.get.find = ' + found[i].fqdn + '\n');
       var docOut = 'Found #' + i + ': ';
       for (var key in proj) {
         if (key != '_id') {
