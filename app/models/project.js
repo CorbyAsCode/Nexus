@@ -17,7 +17,12 @@ var projectSchema = new Schema({
 projectSchema.pre('save', function(next) {
   var currentDate = new Date();
 
-  this.
+  this.updatedDate = currentDate;
+  if (!this.created_at) {
+    this.created_at = currentDate;
+  }
+  next();
+});
 
 
 var Project = mongoose.model('Project', projectSchema);
