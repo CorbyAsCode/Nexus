@@ -137,7 +137,7 @@ function mongoProjectsCreate(conn, coll, query, callback) {
 router.get('/api1/facts/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var conditions = utils.stringToObj(queryObject.conditions);
-  mongoCount(mongoConnector, 'allFacts', conditions, function(count, db) {
+  mongo.factsCount(mongoConnector, 'allFacts', conditions, function(count, db) {
     res.json(count);
     db.close;
   });
@@ -154,7 +154,7 @@ router.get('/api1/facts/find', function(req, res) {
   console.log('projection = ', proj);
   console.log('sort = ', sort);
   
-  mongoFind(mongoConnector, 'allFacts', conditions, proj, sort, function(found, db) {
+  mongo.factsFind(mongoConnector, 'allFacts', conditions, proj, sort, function(found, db) {
     res.json(found);
     db.close();
   });
@@ -168,7 +168,7 @@ router.get('/api1/facts/aggregate', function(req, res) {
   console.log('aggregation type = ', typeof aggregation);
   console.log('aggregation = ', aggregation);
 
-  mongoAgg(mongoConnector, 'allFacts', aggregation, function(found, db) {
+  mongo.factsAgg(mongoConnector, 'allFacts', aggregation, function(found, db) {
     res.json(found);
     db.close();
   });
@@ -184,7 +184,7 @@ router.get('/api1/projects/show', function(req, res) {
   console.log('sort = ', sort);
 
   /*
-  mongoProjectsFind(mongoConnector, 'projects', query, proj, sort, function(found, db) {
+  mongo.factsProjectsFind(mongoConnector, 'projects', query, proj, sort, function(found, db) {
     res.json(found);
     db.close();
   });
@@ -197,7 +197,7 @@ router.post('/api1/project/create', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var insert = utils.stringToObj(queryObject.insert);
 
-  mongoProjectsCreate(mongoConnector, 'projects', insert, function(err, result) { 
+  mongo.factsProjectsCreate(mongoConnector, 'projects', insert, function(err, result) { 
   });
   res.send('project create API');
 });

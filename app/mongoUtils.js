@@ -5,8 +5,8 @@ var MongoClient = mongodb.MongoClient;
 var mongoConnector = 'mongodb://localhost:27017/facts';
 
 /* Count stuff */
-exports.mongoCount = function mongoCount(conn, coll, query, callback) {
-  MongoClient.connect(conn, function (err, db) {
+exports.factsCount = function factsCount(coll, query, callback) {
+  MongoClient.connect(mongoConnector, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
@@ -28,7 +28,7 @@ exports.mongoCount = function mongoCount(conn, coll, query, callback) {
 };
 
 /* Find stuff */
-exports.mongoFind = function mongoFind(conn, coll, query, proj, sort, callback) {
+exports.factsFind = function factsFind(conn, coll, query, proj, sort, callback) {
   MongoClient.connect(conn, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -52,7 +52,7 @@ exports.mongoFind = function mongoFind(conn, coll, query, proj, sort, callback) 
 };
 
 /* Aggregate stuff */
-exports.mongoAgg = function mongoAgg(conn, coll, agg, callback) {
+exports.factsAgg = function factsAgg(conn, coll, agg, callback) {
   MongoClient.connect(conn, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -72,7 +72,7 @@ exports.mongoAgg = function mongoAgg(conn, coll, agg, callback) {
 };
 
 /* Find Projects */
-exports.mongoProjectsFind = function mongoProjectsFind(conn, coll, query, proj, sort, callback) {
+exports.ProjectsFind = function ProjectsFind(conn, coll, query, proj, sort, callback) {
   MongoClient.connect(conn, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
@@ -96,7 +96,7 @@ exports.mongoProjectsFind = function mongoProjectsFind(conn, coll, query, proj, 
 };
 
 /* Create projects */
-exports.mongoProjectsCreate = function mongoProjectsCreate(conn, coll, query, callback) {
+exports.ProjectsCreate = function ProjectsCreate(conn, coll, query, callback) {
    MongoClient.connect(conn, function (err, db) {
      if (err) {
        console.log('Unable to connect to the mongoDB server. Error:', err);
