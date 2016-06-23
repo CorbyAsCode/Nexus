@@ -22,6 +22,7 @@ exports.stringToObj = function stringToObj(string) {
   return value;
 };
 
+/*
 exports.validateQuery = function validateQuery(queryObject) {
   var newQueryObj = {};
   for (var attr in queryObject) {
@@ -33,5 +34,5 @@ exports.validateQuery = function validateQuery(queryObject) {
   }
   return newQueryObj;
 };
-
+*/
 
