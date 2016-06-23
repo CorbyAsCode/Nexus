@@ -114,7 +114,7 @@ router.get('/api1/find', function(req, res) {
 }); 
 
 /* Aggregate things */
-router.get('/api1/agg', function(req, res) {
+router.get('/api1/aggregate', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = utils.validateQuery(queryObject);
   var aggregation = utils.stringToObj(validQuery.agg);
@@ -123,7 +123,6 @@ router.get('/api1/agg', function(req, res) {
 
   mongoAgg(mongoConnector, 'allFacts', aggregation, function(found, db) {
     res.json(found);
-    //res.end();
     db.close();
   });
 });
