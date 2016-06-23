@@ -41,7 +41,7 @@ function mongoCount(conn, coll, query, callback) {
       });
     }
   });
-};
+}
 
 function mongoFind(conn, coll, query, proj, sort, callback) {
   MongoClient.connect(conn, function (err, db) {
@@ -64,7 +64,7 @@ function mongoFind(conn, coll, query, proj, sort, callback) {
       });
     }
   });
-};
+}
 
 function mongoAgg(conn, coll, agg, callback) {
   MongoClient.connect(conn, function (err, db) {
@@ -83,41 +83,84 @@ function mongoAgg(conn, coll, agg, callback) {
       });
     }
   });
-};
+}
+
+function mongoProjectsFind(conn, coll, query, proj, sort, callback) {
+  MongoClient.connect(conn, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      //We are connected. :)
+      console.log('Connection established to', conn);
+      var collection = db.collection(coll);
+      var cursor = collection.find(query, proj).sort(sort);
+      var results = [];
+      cursor.each(function(err, doc) {
+        if (err) {
+          console.log('mongoProjectShow error: ', err);
+        } else if (doc != null) {
+          results.push(doc);
+        } else {
+          callback(results, db);
+        }
+      });
+    }
+  });
+}
+
+function mongoProjectsCreate(conn, coll, query, callback) {
+   MongoClient.connect(conn, function (err, db) {
+     if (err) {
+       console.log('Unable to connect to the mongoDB server. Error:', err);
+     } else {
+       //We are connected. :)
+       console.log('Connection established to', conn);
+       var collection = db.collection(coll);
+       collection.insert(query, function(err, result) {
+         if (err) {
+           console.log('mongoProjectsCreate error: ', err);
+         } else {
+           callback(err, result);
+           db.close();
+         }
+       });
+     }
+  });
+}
+
 
 /* Count things */
-router.get('/api1/count', function(req, res) {
+router.get('/api1/facts/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var validQuery = utils.validateQuery(queryObject);
-
-  mongoCount(mongoConnector, 'allFacts', validQuery, function(count, db) {
+  var conditions = utils.stringToObj(queryObject.conditions);
+  mongoCount(mongoConnector, 'allFacts', conditions, function(count, db) {
     res.json(count);
     db.close;
   });
 });
 
 /* Find things */
-router.get('/api1/find', function(req, res) {
+router.get('/api1/facts/find', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var validQuery = utils.validateQuery(queryObject);
-  var query = utils.stringToObj(validQuery.query);
-  var proj = utils.stringToObj(validQuery.proj);
-  var sort = utils.stringToObj(validQuery.sort);
-  console.log('query = ', query);
+  //var validQuery = utils.validateQuery(queryObject);
+  var conditions = utils.stringToObj(queryObject.conditions);
+  var proj = utils.stringToObj(queryObject.proj);
+  var sort = utils.stringToObj(queryObject.sort);
+  console.log('query = ', conditions);
   console.log('projection = ', proj);
   console.log('sort = ', sort);
   
-  mongoFind(mongoConnector, 'allFacts', query, proj, sort, function(found, db) {
+  mongoFind(mongoConnector, 'allFacts', conditions, proj, sort, function(found, db) {
     res.json(found);
     db.close();
   });
 }); 
 
 /* Aggregate things */
-router.get('/api1/aggregate', function(req, res) {
+router.get('/api1/facts/aggregate', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var validQuery = utils.validateQuery(queryObject);
-  var aggregation = utils.stringToObj(validQuery.agg);
+  //var validQuery = utils.validateQuery(queryObject);
+  var aggregation = utils.stringToObj(queryObject.agg);
   console.log('aggregation type = ', typeof aggregation);
   console.log('aggregation = ', aggregation);
 
@@ -127,12 +170,52 @@ router.get('/api1/aggregate', function(req, res) {
   });
 });
 
+router.get('/api1/projects/show', function(req, res) {
+  var queryObject = url.parse(req.url, true).query;
+  var conditions = utils.stringToObj(queryObject.conditions);
+  var proj = utils.stringToObj(queryObject.proj);
+  var sort = utils.stringToObj(queryObject.sort);
+  console.log('query = ', conditions);
+  console.log('projection = ', proj);
+  console.log('sort = ', sort);
+
+  /*
+  mongoProjectsFind(mongoConnector, 'projects', query, proj, sort, function(found, db) {
+    res.json(found);
+    db.close();
+  });
+  */
+  res.send('project show API');
+});
+
+
+router.post('/api1/project/create', function(req, res) {
+  var queryObject = url.parse(req.url, true).query;
+  var insert = utils.stringToObj(queryObject.insert);
+
+  mongoProjectsCreate(mongoConnector, 'projects', insert, function(err, result) { 
+  });
+  res.send('project create API');
+});
+
+router.post('/api1/project/update', function(req, res) {
+  res.send('project update API');
+});
+
+router.post('/api1/project/delete', function(req, res) {
+  res.send('project delete API');
+});
+
+router.post('/api1/project/associate', function(req, res) {
+  res.send('project associate API');
+});
+
+/*
 app.get('/api1/users', function (res, req) {
   var user = res.param('user');
   res.send('user = ' + user);
 });
 
-  /*
   User.find()
   .sort({ createdAt: 'descending' })
   .exec(function(err, users) {
