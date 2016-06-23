@@ -117,12 +117,13 @@ router.get('/api1/find', function(req, res) {
 router.get('/api1/agg', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var validQuery = utils.validateQuery(queryObject);
-  var match = utils.stringToObj(validQuery.match);
+  var aggregation = utils.stringToObj(validQuery.agg);
   console.log('aggregation type = ', typeof aggregation);
   console.log('aggregation = ', aggregation);
 
   mongoAgg(mongoConnector, 'allFacts', aggregation, function(found, db) {
-    //res.json(found);
+    res.json(found);
+    //res.end();
     db.close();
   });
 });
