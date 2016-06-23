@@ -1,16 +1,17 @@
 var express = require('express');
-var mongodb = require('mongodb');
+//var mongodb = require('mongodb');
 var url = require('url');
 //var User = require('./models/user');
 var router = express.Router();
 var utils = require('./routeUtils');
+var mongo = require('./mongoUtils');
 //var passport = require('passport');
 //var setUpPassport = require('./setuppassport');
 var app = express();
-var MongoClient = mongodb.MongoClient;
+//var MongoClient = mongodb.MongoClient;
 
 
-var mongoConnector = 'mongodb://localhost:27017/facts';
+//var mongoConnector = 'mongodb://localhost:27017/facts';
 
 /*
 router.use(function(req, res, next) {
@@ -21,6 +22,7 @@ router.use(function(req, res, next) {
 });
 */
 
+/*
 function mongoCount(conn, coll, query, callback) {
   MongoClient.connect(conn, function (err, db) {
     if (err) {
@@ -127,7 +129,9 @@ function mongoProjectsCreate(conn, coll, query, callback) {
      }
   });
 }
+*/
 
+/* Need to convert mongo* functions to mongo.* functions */
 
 /* Count things */
 router.get('/api1/facts/count', function(req, res) {
