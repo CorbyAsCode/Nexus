@@ -1,5 +1,4 @@
 var express = require('express');
-//var mongodb = require('mongodb');
 var url = require('url');
 //var User = require('./models/user');
 var router = express.Router();
@@ -8,10 +7,6 @@ var mongo = require('./mongoUtils');
 //var passport = require('passport');
 //var setUpPassport = require('./setuppassport');
 var app = express();
-//var MongoClient = mongodb.MongoClient;
-
-
-//var mongoConnector = 'mongodb://localhost:27017/facts';
 
 /*
 router.use(function(req, res, next) {
@@ -22,122 +17,11 @@ router.use(function(req, res, next) {
 });
 */
 
-/*
-function mongoCount(conn, coll, query, callback) {
-  MongoClient.connect(conn, function (err, db) {
-    if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-      //We are connected. :)
-      console.log('Connection established to', conn);
-      var collection = db.collection(coll);
-
-      collection.count(query, function (err, result) {
-        if (err) {
-          console.log('mongoCount error: ', err);
-        } else {
-          console.log('mongoCount.result = ' + result + '\n');
-          callback(result, db);
-          
-        }
-      });
-    }
-  });
-}
-
-function mongoFind(conn, coll, query, proj, sort, callback) {
-  MongoClient.connect(conn, function (err, db) {
-    if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-      //We are connected. :)
-      console.log('Connection established to', conn);
-      var collection = db.collection(coll);
-      var cursor = collection.find(query, proj).sort(sort);
-      var results = [];
-      cursor.each(function(err, doc) {
-        if (err) {
-          console.log('mongoFind error: ', err);
-        } else if (doc != null) {
-          results.push(doc);
-        } else {
-          callback(results, db);
-        }
-      });
-    }
-  });
-}
-
-function mongoAgg(conn, coll, agg, callback) {
-  MongoClient.connect(conn, function (err, db) {
-    if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-      //We are connected. :)
-      console.log('Connection established to', conn);
-      var collection = db.collection(coll);
-      collection.aggregate(agg).toArray(function(err, result) {
-        if (err) {
-          console.log('mongoAgg error: ', err);
-        } else {
-          callback(result, db);
-        }
-      });
-    }
-  });
-}
-
-function mongoProjectsFind(conn, coll, query, proj, sort, callback) {
-  MongoClient.connect(conn, function (err, db) {
-    if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
-    } else {
-      //We are connected. :)
-      console.log('Connection established to', conn);
-      var collection = db.collection(coll);
-      var cursor = collection.find(query, proj).sort(sort);
-      var results = [];
-      cursor.each(function(err, doc) {
-        if (err) {
-          console.log('mongoProjectShow error: ', err);
-        } else if (doc != null) {
-          results.push(doc);
-        } else {
-          callback(results, db);
-        }
-      });
-    }
-  });
-}
-
-function mongoProjectsCreate(conn, coll, query, callback) {
-   MongoClient.connect(conn, function (err, db) {
-     if (err) {
-       console.log('Unable to connect to the mongoDB server. Error:', err);
-     } else {
-       //We are connected. :)
-       console.log('Connection established to', conn);
-       var collection = db.collection(coll);
-       collection.insert(query, function(err, result) {
-         if (err) {
-           console.log('mongoProjectsCreate error: ', err);
-         } else {
-           callback(err, result);
-           db.close();
-         }
-       });
-     }
-  });
-}
-*/
-
-/* Need to convert mongo* functions to mongo.* functions */
-
 /* Count things */
 router.get('/api1/facts/count', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var conditions = utils.stringToObj(queryObject.conditions);
-  mongo.factsCount(mongoConnector, 'allFacts', conditions, function(count, db) {
+  mongo.factsCount('allFacts', conditions, function(count, db) {
     res.json(count);
     db.close;
   });
@@ -174,7 +58,7 @@ router.get('/api1/facts/aggregate', function(req, res) {
   });
 });
 
-router.get('/api1/projects/show', function(req, res) {
+router.get('/api1/project/find', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var conditions = utils.stringToObj(queryObject.conditions);
   var proj = utils.stringToObj(queryObject.proj);
@@ -183,13 +67,11 @@ router.get('/api1/projects/show', function(req, res) {
   console.log('projection = ', proj);
   console.log('sort = ', sort);
 
-  /*
-  mongo.factsProjectsFind(mongoConnector, 'projects', query, proj, sort, function(found, db) {
-    res.json(found);
-    db.close();
+  mongo.projectsFind(conditions, proj, sort, function(result) {
+    res.json(result);
   });
-  */
-  res.send('project show API');
+  
+  //res.send('project show API');
 });
 
 
@@ -197,9 +79,9 @@ router.post('/api1/project/create', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
   var insert = utils.stringToObj(queryObject.insert);
 
-  mongo.factsProjectsCreate(mongoConnector, 'projects', insert, function(err, result) { 
+  mongo.projectsCreate(insert, function(result) {
+    res.json(result);
   });
-  res.send('project create API');
 });
 
 router.post('/api1/project/update', function(req, res) {

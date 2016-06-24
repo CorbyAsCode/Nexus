@@ -1,7 +1,7 @@
 var exports = module.exports = {};
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
-
+var Project = require('./models/project');
 var mongoConnector = 'mongodb://localhost:27017/facts';
 
 /* Count stuff */
@@ -11,7 +11,7 @@ exports.factsCount = function factsCount(coll, query, callback) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
       //We are connected. :)
-      console.log('Connection established to', conn);
+      console.log('Connection established to', mongoConnector);
       var collection = db.collection(coll);
 
       collection.count(query, function (err, result) {
@@ -28,8 +28,8 @@ exports.factsCount = function factsCount(coll, query, callback) {
 };
 
 /* Find stuff */
-exports.factsFind = function factsFind(conn, coll, query, proj, sort, callback) {
-  MongoClient.connect(conn, function (err, db) {
+exports.factsFind = function factsFind(coll, query, proj, sort, callback) {
+  MongoClient.connect(mongoConnector, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
@@ -52,8 +52,8 @@ exports.factsFind = function factsFind(conn, coll, query, proj, sort, callback) 
 };
 
 /* Aggregate stuff */
-exports.factsAgg = function factsAgg(conn, coll, agg, callback) {
-  MongoClient.connect(conn, function (err, db) {
+exports.factsAgg = function factsAgg(coll, agg, callback) {
+  MongoClient.connect(mongoConnector, function (err, db) {
     if (err) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
@@ -72,47 +72,29 @@ exports.factsAgg = function factsAgg(conn, coll, agg, callback) {
 };
 
 /* Find Projects */
-exports.ProjectsFind = function ProjectsFind(conn, coll, query, proj, sort, callback) {
-  MongoClient.connect(conn, function (err, db) {
+exports.projectsFind = function projectsFind(query, proj, sort, callback) {
+  Project.find(query, function(err, found) {
+    var result = '';
     if (err) {
-      console.log('Unable to connect to the mongoDB server. Error:', err);
+      result = err;
     } else {
-      //We are connected. :)
-      console.log('Connection established to', conn);
-      var collection = db.collection(coll);
-      var cursor = collection.find(query, proj).sort(sort);
-      var results = [];
-      cursor.each(function(err, doc) {
-        if (err) {
-          console.log('mongoProjectShow error: ', err);
-        } else if (doc != null) {
-          results.push(doc);
-        } else {
-          callback(results, db);
-        }
-      });
+      result = found;
     }
+    callback(result);
   });
 };
 
 /* Create projects */
-exports.ProjectsCreate = function ProjectsCreate(conn, coll, query, callback) {
-   MongoClient.connect(conn, function (err, db) {
-     if (err) {
-       console.log('Unable to connect to the mongoDB server. Error:', err);
-     } else {
-       //We are connected. :)
-       console.log('Connection established to', conn);
-       var collection = db.collection(coll);
-       collection.insert(query, function(err, result) {
-         if (err) {
-           console.log('mongoProjectsCreate error: ', err);
-         } else {
-           callback(err, result);
-           db.close();
-         }
-       });
-     }
+exports.projectsCreate = function projectsCreate(insert, callback) {
+  var project = new Project(insert);
+  project.save(function(err) {
+    var result = '';
+    if (err) { 
+      result = 'projectsCreate error: ' + err.toString();
+    } else {
+      result = 'Project saved successfully!';
+    }
+    callback(result);
   });
 };
 
