@@ -98,3 +98,40 @@ exports.projectsCreate = function projectsCreate(insert, callback) {
   });
 };
 
+/* Update projects */
+exports.projectsUpdate = function projectsUpdate(conditions, update, callback) {
+  Project.findOneAndUpdate(conditions, update, function(err, project) {
+    if (err) {
+      console.log('Project.findOneAndUpdate error: ', err);
+    } else {
+      callback(project);
+    }
+  });
+};
+
+/* Delete projects */
+exports.projectsDelete = function projectsDelete(conditions, callback) {
+  Project.find(conditions, function(err, project) {
+    if (err) {
+      console.log('projectsDelete error: ', err);
+    } else {
+      project.remove(function(err) {
+        if (err) {
+          console.log('projectsDelete remove error: ', err);
+        } else {
+          callback('project removed');
+        }
+      });
+    }
+  });
+};
+
+
+
+
+
+
+
+
+
+

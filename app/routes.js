@@ -85,14 +85,29 @@ router.post('/api1/project/create', function(req, res) {
 });
 
 router.post('/api1/project/update', function(req, res) {
-  res.send('project update API');
+  var queryObject = url.parse(req.url, true).query;
+  var conditions = utils.stringToObj(queryObject.conditions);
+  var update = utils.stringToObj(queryObject.update);
+
+  mongo.projectsUpdate(conditions, update, function(result) {
+    res.send('project update API');
+  });
 });
 
 router.post('/api1/project/delete', function(req, res) {
-  res.send('project delete API');
+  var queryObject = url.parse(req.url, true).query;
+  var conditions = utils.stringToObj(queryObject.conditions);
+  
+  mongo.projectsDelete(conditions, function(result) {
+    res.send('project delete API');
+  });
 });
 
 router.post('/api1/project/associate', function(req, res) {
+  var queryObject = url.parse(req.url, true).query;
+  var projectQuery = utils.stringToObj(queryObject.project);
+  var fqdnQuery = utils.stringToObj(queryObject.fqdn);
+
   res.send('project associate API');
 });
 
