@@ -1,3 +1,8 @@
+
+// Aggregation
 http://localhost:8080/api1/aggregate?agg=[{%22$match%22:{%22dmz%22:false}},{%22$group%22:{%22_id%22:%20%22$vmwaretools_version%22,%22count%22:{%22$sum%22:1}}}]
 
 http://localhost:8080/api1/aggregate?agg=[{"$match":{"dmz":false}},{"$group":{"_id":"$vmwaretools_version","count":{"$sum":1}}}]
+
+// Association
+http://localhost:8080/api1/project/associate?project=3D%20Print&fqdn=ai-3dprtdev.niaid.nih.gov
