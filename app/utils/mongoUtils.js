@@ -1,7 +1,7 @@
 var exports = module.exports = {};
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
-var Project = require('./models/project');
+var Project = require('../models/project');
 var mongoConnector = 'mongodb://localhost:27017/facts';
 
 /* Count stuff */
