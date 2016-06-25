@@ -111,7 +111,7 @@ exports.projectsUpdate = function projectsUpdate(conditions, update, callback) {
 
 /* Delete projects */
 exports.projectsDelete = function projectsDelete(conditions, callback) {
-  Project.find(conditions, function(err, project) {
+  Project.findOne(conditions, function(err, project) {
     if (err) {
       console.log('projectsDelete error: ', err);
     } else {
@@ -126,8 +126,28 @@ exports.projectsDelete = function projectsDelete(conditions, callback) {
   });
 };
 
-
-
+/* Associate a project with a server */
+exports.projectsAssoc = function projectsAssoc(projectName, fqdn, callback) {
+  MongoClient.connect(mongoConnector, function (err, db) {
+    if (err) {
+      console.log('Unable to connect to the mongoDB server. Error:', err);
+    } else {
+      //We are connected. :)
+      console.log('Connection established to', conn);
+      var collection = db.collection(coll);
+      collection.findAndModify({fqdn:fqdn},
+          [[]],
+          {$set:{stakeholder:projectName}},
+          {new:true}, function(err, facts) {
+        if (err) {
+          console.log('projectsAssoc error: ', err);
+        } else {
+          callback(facts);
+        }
+      });
+    }
+  });
+};
 
 
 
