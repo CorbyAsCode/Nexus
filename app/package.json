@@ -1,5 +1,5 @@
 {
-  "name": "learn-about-me",
+  "name": "Nexus",
   "private": true,
   "scripts": {
     "start": "nodemon ./app.js"
