@@ -106,11 +106,14 @@ router.post('/api1/project/delete', function(req, res) {
 
 router.post('/api1/project/associate', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var projectName = utils.stringToObj(queryObject.project);
-  var fqdnQuery = utils.stringToObj(queryObject.fqdn);
+  //var projectName = utils.stringToObj(queryObject.project);
+  //var fqdnQuery = utils.stringToObj(queryObject.fqdn);
+  var projectName = queryObject.project;
+  var fqdn = queryObject.fqdn;
 
-  mongo.projectsAssoc(projectName, fqdn, function(result) {
-    res.send('project associate API');
+
+  mongo.projectsAssoc(projectName, fqdn, 'allFacts', function(result) {
+    res.send(result);
   });
 });
 
