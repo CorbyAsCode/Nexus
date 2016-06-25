@@ -13,10 +13,10 @@ exports.checkForBooleans = function checkForBooleans(value) {
 exports.stringToObj = function stringToObj(string) {
   var value = null;
   try {
-    console.log('Trying to convert string to object...');
+    console.log('Trying to convert string to object: ' + string);
     value = JSON.parse(string);
   } catch (e) {
-    console.log('stringToObj error: ' + e);
+    console.log('stringToObj error: ' + string + ' | ' + e);
     value = string;
   }
   return value;
