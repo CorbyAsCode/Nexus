@@ -1,6 +1,6 @@
 DONE - Add sort to the find route
 
-Add aggregation query support
+DONE - Add aggregation query support
 
 DONE - Return all results as JSON
 
@@ -8,6 +8,6 @@ Use config files for commonly changed variables
 
 See if the data ETL can be automated to execute periodically inside the app
 
-Add support to create new Project groups
+DONE - Add support to create new Project groups
 
-Add support to associate a Project group with a server 
+DONE - Add support to associate a Project group with a server 
