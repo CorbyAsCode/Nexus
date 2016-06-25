@@ -86,6 +86,7 @@ router.post('/api1/project/create', function(req, res) {
 
 router.post('/api1/project/update', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
+  console.log('queryObject: ' + queryObject);
   var conditions = utils.stringToObj(queryObject.conditions);
   var update = utils.stringToObj(queryObject.update);
 
@@ -105,10 +106,12 @@ router.post('/api1/project/delete', function(req, res) {
 
 router.post('/api1/project/associate', function(req, res) {
   var queryObject = url.parse(req.url, true).query;
-  var projectQuery = utils.stringToObj(queryObject.project);
+  var projectName = utils.stringToObj(queryObject.project);
   var fqdnQuery = utils.stringToObj(queryObject.fqdn);
 
-  res.send('project associate API');
+  mongo.projectsAssoc(projectName, fqdn, function(result) {
+    res.send('project associate API');
+  });
 });
 
 /*
