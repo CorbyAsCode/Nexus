@@ -34,7 +34,7 @@ exports.factsFind = function factsFind(coll, query, proj, sort, callback) {
       console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
       //We are connected. :)
-      console.log('Connection established to', conn);
+      console.log('Connection established to', mongoConnector);
       var collection = db.collection(coll);
       var cursor = collection.find(query, proj).sort(sort);
       var results = [];

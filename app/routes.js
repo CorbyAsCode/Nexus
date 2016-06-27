@@ -38,7 +38,7 @@ router.get('/api1/facts/find', function(req, res) {
   console.log('projection = ', proj);
   console.log('sort = ', sort);
   
-  mongo.factsFind(mongoConnector, 'allFacts', conditions, proj, sort, function(found, db) {
+  mongo.factsFind('allFacts', conditions, proj, sort, function(found, db) {
     res.json(found);
     db.close();
   });
